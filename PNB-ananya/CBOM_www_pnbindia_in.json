@@ -1,0 +1,43 @@
+{
+    "asset_domain": "www.pnbindia.in",
+    "scan_date": "2026-03-24 00:05:38",
+    "tls_configuration": {
+        "protocol": "TLSv1.2",
+        "cipher_suite": "ECDHE-RSA-AES256-GCM-SHA384"
+    },
+    "certificate_details": {
+        "subject": "jurisdictionC = IN, businessCategory = Government Entity, serialNumber = Government Entity, C = IN, ST = Delhi, L = Dwarka, O = Punjab National Bank, CN = www.pnbindia.in",
+        "issuer": "C = US, O = DigiCert Inc, CN = GeoTrust EV RSA CA G2",
+        "signature_algorithm": "sha256WithRSAEncryption",
+        "public_key_size": "2048",
+        "valid_from": "May  8 00:00:00 2025 GMT",
+        "valid_until": "Jun  8 23:59:59 2026 GMT"
+    },
+    "pqc_support": {
+        "is_quantum_safe": true,
+        "supported_algorithms": [
+            "mlkem512",
+            "p256_mlkem512",
+            "x25519_mlkem512",
+            "mlkem768",
+            "p384_mlkem768",
+            "x448_mlkem768",
+            "X25519MLKEM768",
+            "SecP256r1MLKEM768",
+            "mlkem1024",
+            "p521_mlkem1024",
+            "SecP384r1MLKEM1024",
+            "frodo640aes",
+            "x25519_frodo640aes",
+            "frodo976aes",
+            "x448_frodo976aes",
+            "bikel1",
+            "x25519_bikel1",
+            "bikel3"
+        ],
+        "status_label": "CERTIFIED: Post Quantum Cryptography (PQC) Ready \ud83d\udee1\ufe0f"
+    },
+    "recommendations": [
+        "Maintain current NIST-standardized Post-Quantum algorithms."
+    ]
+}
