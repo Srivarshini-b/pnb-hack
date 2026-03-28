@@ -102,6 +102,98 @@ groups_info = {
     "bikel5": "PQ", "p521_bikel5": "Hybrid",
     "X25519": "Classical", "X448": "Classical", "secp256r1": "Classical", "secp384r1": "Classical", "secp521r1": "Classical"
 }
+def probe_tls_versions(domain, openssl_bin="openssl"):
+    """Probe each TLS version individually and return support status."""
+    versions = [
+        {"name": "SSLv3",   "flag": "-ssl3",   "label": "SSL 3.0"},
+        {"name": "TLSv1.0", "flag": "-tls1",   "label": "TLS 1.0"},
+        {"name": "TLSv1.1", "flag": "-tls1_1", "label": "TLS 1.1"},
+        {"name": "TLSv1.2", "flag": "-tls1_2", "label": "TLS 1.2"},
+        {"name": "TLSv1.3", "flag": "-tls1_3", "label": "TLS 1.3"},
+    ]
+    results = {}
+
+    def test_version(ver):
+        cmd = [
+            openssl_bin,
+            "s_client",
+            "-connect", f"{domain}:443",
+            "-servername", domain,
+            ver["flag"],
+            "-cipher",
+            "ALL:@SECLEVEL=0"
+        ]
+
+        try:
+            res = subprocess.run(
+                cmd,
+                input="Q\n",
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            output = (res.stdout + res.stderr).lower()
+
+            # ❌ Strong failure detection FIRST
+            if any(err in output for err in [
+                "no protocols available",
+                "handshake failure",
+                "no peer certificate",
+                "unsupported protocol",
+                "wrong version number",
+                "connection refused"
+            ]):
+                results[ver["name"]] = {
+                    "supported": False,
+                    "negotiated": None,
+                    "label": ver["label"]
+                }
+                return
+
+            # ✅ Extract protocol ONLY reliable indicator
+            proto_match = re.search(r"protocol\s*:\s*(tlsv1\.[0-3])", output)
+
+            if proto_match:
+                negotiated = proto_match.group(1).lower()
+
+                # ✔ Exact match required
+                if negotiated == ver["name"].lower():
+                    results[ver["name"]] = {
+                        "supported": True,
+                        "negotiated": negotiated.upper(),
+                        "label": ver["label"]
+                    }
+                else:
+                    results[ver["name"]] = {
+                        "supported": False,
+                        "negotiated": None,
+                        "label": ver["label"]
+                    }
+            else:
+                # No protocol line → unsupported
+                results[ver["name"]] = {
+                    "supported": False,
+                    "negotiated": None,
+                    "label": ver["label"]
+                }
+
+        except Exception:
+            results[ver["name"]] = {
+                "supported": False,
+                "negotiated": None,
+                "label": ver["label"]
+            }
+
+    threads = []
+    for v in versions:
+        t = threading.Thread(target=test_version, args=(v,))
+        threads.append(t)
+        t.start()
+    for t in threads:
+        t.join()
+
+    return results
 
 def quick_pqc_test(domain, openssl_bin="openssl"):
     """Run a fast PQC test against a domain using all 43 algorithms via threading."""
@@ -175,6 +267,9 @@ def run_pipeline():
     cipher_value = cipher_match.group(1).strip() if cipher_match else "Unknown"
     if cipher_value in ["0000", "(NONE)"]: cipher_value = "Unknown"
     cbom_data["tls_configuration"]["cipher_suite"] = cipher_value
+
+    # Check TLS version support (SSLv3, 1.0, 1.1, 1.2, 1.3)
+    cbom_data["tls_configuration"]["tls_versions"] = probe_tls_versions(host, openssl_bin)
 
     cert_match = re.search(r"-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----", output, re.S)
     target_ip = "Unknown"

@@ -11,7 +11,8 @@ const scanReportSchema = new mongoose.Schema({
   },
   tlsConfiguration: {
     protocol: { type: String, default: 'Unknown' },
-    cipherSuite: { type: String, default: 'Unknown' }
+    cipherSuite: { type: String, default: 'Unknown' },
+    tlsVersions: { type: Object, default: {} }
   },
   certificateDetails: {
     subject: { type: String, default: 'Unknown' },

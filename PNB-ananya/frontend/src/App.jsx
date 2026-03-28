@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import AssetInventory from './components/AssetInventory';
+import AssetDiscovery from './components/AssetDiscovery';
 import CbomPage from './components/CbomPage';
 import CyberRating from './components/CyberRating';
 import Reporting from './components/Reporting';
-import { LayoutDashboard, Database, FileText, Shield, BarChart } from 'lucide-react';
+import { LayoutDashboard, Database, Globe, FileText, Shield, BarChart } from 'lucide-react';
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard');
@@ -35,6 +36,12 @@ function App() {
             className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all text-sm font-medium ${activeView === 'inventory' ? 'bg-secondary/20 text-secondary border border-secondary/30' : 'text-textMuted hover:text-white'}`}
           >
             <Database size={16} /> Asset Inventory
+          </button>
+          <button
+            onClick={() => setActiveView('discovery')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all text-sm font-medium ${activeView === 'discovery' ? 'bg-[#06b6d4]/20 text-[#06b6d4] border border-[#06b6d4]/30' : 'text-textMuted hover:text-white'}`}
+          >
+            <Globe size={16} /> Asset Discovery
           </button>
           <button
             onClick={() => setActiveView('cbom')}
@@ -70,6 +77,8 @@ function App() {
           <Dashboard setGlobalScanData={setScanData} />
         ) : activeView === 'inventory' ? (
           <AssetInventory assetData={scanData?.asset_inventory || null} target={scanData?.target || scanData?.asset_domain || ''} />
+        ) : activeView === 'discovery' ? (
+          <AssetDiscovery assetData={scanData?.asset_inventory || null} target={scanData?.target || scanData?.asset_domain || ''} />
         ) : activeView === 'cbom' ? (
           <CbomPage />
         ) : activeView === 'rating' ? (

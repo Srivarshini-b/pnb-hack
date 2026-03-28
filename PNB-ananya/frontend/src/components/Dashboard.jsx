@@ -542,6 +542,60 @@ const Dashboard = ({ setGlobalScanData }) => {
             )}
           </div>
 
+          {/* TLS Version Support Panel */}
+          {currentScan && currentScan.tlsConfiguration?.tlsVersions && Object.keys(currentScan.tlsConfiguration.tlsVersions).length > 0 && (
+            <div className="glass-panel p-6">
+              <h3 className="text-sm font-bold text-textMuted uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Shield size={16} /> Supported TLS Versions
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                {['SSLv3', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3'].map((ver) => {
+                  const data = currentScan.tlsConfiguration.tlsVersions[ver];
+                  if (!data) return null;
+                  const isSupported = data.supported;
+                  const isDeprecated = ['SSLv3', 'TLSv1.0', 'TLSv1.1'].includes(ver);
+                  return (
+                    <div
+                      key={ver}
+                      className={`p-4 rounded-lg border text-center transition-all ${
+                        isSupported
+                          ? isDeprecated
+                            ? 'bg-amber-500/10 border-amber-500/30'
+                            : 'bg-secondary/10 border-secondary/30'
+                          : 'bg-[#1f2937]/30 border-border'
+                      }`}
+                    >
+                      <p className="text-xs text-textMuted uppercase tracking-wider mb-2">{data.label}</p>
+                      <div className="flex items-center justify-center gap-1.5">
+                        {isSupported ? (
+                          isDeprecated ? (
+                            <>
+                              <AlertTriangle size={14} className="text-amber-500" />
+                              <span className="text-sm font-bold text-amber-500">Supported</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle size={14} className="text-secondary" />
+                              <span className="text-sm font-bold text-secondary">Supported</span>
+                            </>
+                          )
+                        ) : (
+                          <>
+                            <ShieldAlert size={14} className="text-textMuted/50" />
+                            <span className="text-sm font-medium text-textMuted/50">Not Supported</span>
+                          </>
+                        )}
+                      </div>
+                      {isSupported && isDeprecated && (
+                        <p className="text-[10px] text-amber-400/70 mt-1.5">⚠ Deprecated</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* AI-Powered Recommendations */}
           {currentScan && (
             <div className="glass-panel p-6 border border-purple-500/20 bg-gradient-to-br from-[#0f1729] to-[#1a1040]/30">

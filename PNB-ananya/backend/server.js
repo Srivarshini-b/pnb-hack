@@ -106,7 +106,8 @@ app.post('/api/scan', (req, res) => {
         target: scanData.asset_domain,
         tlsConfiguration: {
           protocol: scanData.tls_configuration.protocol,
-          cipherSuite: scanData.tls_configuration.cipher_suite
+          cipherSuite: scanData.tls_configuration.cipher_suite,
+          tlsVersions: scanData.tls_configuration.tls_versions || {}
         },
         certificateDetails: {
           subject: scanData.certificate_details.subject,
