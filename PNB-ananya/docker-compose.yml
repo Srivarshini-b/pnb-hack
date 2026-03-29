@@ -1,0 +1,40 @@
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: qscan_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: qscan_backend
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/qscan
+      - PORT=5001
+      # Optional: Add your GEMINI API key here to enable AI reporting
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: qscan_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
