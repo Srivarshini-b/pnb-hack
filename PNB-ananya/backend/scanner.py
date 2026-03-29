@@ -33,6 +33,7 @@ def get_whois_info(domain):
             output = result.stdout
             for pattern in [r"Registrar:\s*(.+)", r"Sponsoring Registrar:\s*(.+)", r"registrar name:\s*(.+)", r"Registrar Name:\s*(.+)"]:
                 m = re.search(pattern, output, re.I)
+                console.log("this is the  value of m", m)
                 if m and m.group(1).strip(): info["registrar"] = m.group(1).strip(); break
             for pattern in [r"Creation Date:\s*(.+)", r"Created:\s*(.+)", r"Registration Date:\s*(.+)", r"Created On:\s*(.+)"]:
                 m = re.search(pattern, output, re.I)
