@@ -364,7 +364,7 @@ const Dashboard = ({ setGlobalScanData }) => {
               }`}>
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-lg font-bold">Latest CBOM Details</h3>
+                  <h3 className="text-lg font-bold"> PQC  Score </h3>
                   <p className="text-sm text-textMuted mt-1">{currentScan.target}</p>
                 </div>
                 {currentScan.pqcSupport.statusLabel === 'Fully Quantum Safe' ? <ShieldCheck className="text-primary w-8 h-8" /> :
