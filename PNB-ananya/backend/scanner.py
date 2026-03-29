@@ -4,6 +4,7 @@ import re
 import json
 import urllib.request
 import urllib.error
+import requests
 import socket
 import threading
 from datetime import datetime
@@ -14,16 +15,22 @@ def get_whois_info(domain):
     
     try:
         url = f"https://rdap.org/domain/{domain}"
-        req = urllib.request.Request(url, headers={"User-Agent": "QScan/1.0", "Accept": "application/rdap+json"})
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            data = json.loads(resp.read().decode())
-            for entity in data.get("entities", []):
-                if "registrar" in entity.get("roles", []):
-                    try: info["registrar"] = entity.get("vcardArray", [0, [["fn", {}, "text", "N/A"]]])[1][0][3]
-                    except: pass
-            for evt in data.get("events", []):
-                if evt.get("eventAction") == "registration":
-                    info["reg_date"] = evt.get("eventDate", "N/A").split("T")[0]
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        
+        for entity in data.get("entities", []):
+            if "registrar" in entity.get("roles", []):
+                try:
+                    for item in entity.get("vcardArray", [])[1]:
+                        if item[0] == "fn":
+                            info["registrar"] = item[3]
+                            break
+                except Exception:
+                    pass
+                    
+        for evt in data.get("events", []):
+            if evt.get("eventAction") == "registration":
+                info["reg_date"] = evt.get("eventDate", "N/A").split("T")[0]
     except Exception:
         pass
 
@@ -33,7 +40,6 @@ def get_whois_info(domain):
             output = result.stdout
             for pattern in [r"Registrar:\s*(.+)", r"Sponsoring Registrar:\s*(.+)", r"registrar name:\s*(.+)", r"Registrar Name:\s*(.+)"]:
                 m = re.search(pattern, output, re.I)
-                
                 if m and m.group(1).strip(): info["registrar"] = m.group(1).strip(); break
             for pattern in [r"Creation Date:\s*(.+)", r"Created:\s*(.+)", r"Registration Date:\s*(.+)", r"Created On:\s*(.+)"]:
                 m = re.search(pattern, output, re.I)
