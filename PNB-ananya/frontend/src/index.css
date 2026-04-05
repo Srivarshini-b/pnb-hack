@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-background: 248 250 252;
+    --color-panel: 255 255 255;
+    --color-border: 226 232 240;
+    --color-primary: 59 130 246;
+    --color-secondary: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-danger: 239 68 68;
+    --color-text-main: 0 0 0;
+    --color-text-muted: 51 65 85;
+  }
+
+  .dark {
+    --color-background: 10 14 23;
+    --color-panel: 21 29 44;
+    --color-border: 30 41 59;
+    --color-primary: 59 130 246;
+    --color-secondary: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-danger: 239 68 68;
+    --color-text-main: 255 255 255;
+    --color-text-muted: 156 163 175;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-background text-textMain transition-colors duration-300;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-panel/80 backdrop-blur-md border border-border/50 rounded-xl shadow-lg shadow-black/20;
+  }
+  
+  .neon-text-primary {
+    @apply text-primary drop-shadow-[0_0_8px_rgba(59,130,246,0.5)];
+  }
+
+  .neon-text-secondary {
+    @apply text-secondary drop-shadow-[0_0_8px_rgba(16,185,129,0.5)];
+  }
+
+  .neon-border-focus {
+    @apply focus:ring-2 focus:ring-primary/50 focus:border-primary/80 transition-shadow;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
