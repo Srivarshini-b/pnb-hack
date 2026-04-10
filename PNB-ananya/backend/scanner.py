@@ -567,4 +567,10 @@ def run_pipeline():
 
     print(json.dumps(cbom_data))
 
+    # Save to JSON file for the dashboard "View Raw JSON" feature
+    import os
+    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scan_results.json")
+    with open(json_path, "w") as f:
+        json.dump(cbom_data, f, indent=2)
+
 if __name__ == "__main__": run_pipeline()

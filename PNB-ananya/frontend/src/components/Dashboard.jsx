@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Shield, ShieldAlert, ShieldCheck, Activity, Globe, RefreshCcw, Server, AlertTriangle, Lock, Key, FileText, CheckCircle, Info, Sparkles, Loader2 } from 'lucide-react';
+import { Shield, ShieldAlert, ShieldCheck, Activity, Globe, RefreshCcw, Server, AlertTriangle, Lock, Key, FileText, CheckCircle, Info, Sparkles, Loader2, Code, Copy, Download, X } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const API_URL = 'http://localhost:5001/api';
@@ -12,6 +12,10 @@ const Dashboard = ({ setGlobalScanData }) => {
   const [history, setHistory] = useState([]);
   const [error, setError] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [jsonModalOpen, setJsonModalOpen] = useState(false);
+  const [jsonData, setJsonData] = useState(null);
+  const [jsonLoading, setJsonLoading] = useState(false);
+  const [jsonCopied, setJsonCopied] = useState(false);
 
   useEffect(() => {
     fetchHistory();
@@ -93,6 +97,43 @@ const Dashboard = ({ setGlobalScanData }) => {
     } catch (err) {
       console.error('Failed to load scan details', err);
     }
+  };
+
+  const handleViewJson = async () => {
+    setJsonModalOpen(true);
+    setJsonCopied(false);
+    if (currentScan?.rawScannerOutput && Object.keys(currentScan.rawScannerOutput).length > 0) {
+      setJsonData(currentScan.rawScannerOutput);
+    } else if (currentScan?._id) {
+      // Fallback: fetch full scan details from DB
+      setJsonLoading(true);
+      try {
+        const res = await axios.get(`${API_URL}/scans/${currentScan._id}`);
+        setJsonData(res.data.rawScannerOutput || res.data);
+      } catch (err) {
+        setJsonData({ error: 'Failed to load scan data.' });
+      } finally {
+        setJsonLoading(false);
+      }
+    } else {
+      setJsonData({ error: 'No scan data available. Run a scan first.' });
+    }
+  };
+
+  const handleCopyJson = () => {
+    navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2));
+    setJsonCopied(true);
+    setTimeout(() => setJsonCopied(false), 2000);
+  };
+
+  const handleDownloadJson = () => {
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `qscan_${jsonData?.asset_domain || 'scan'}_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   // Stats for Top Bar
@@ -400,6 +441,24 @@ const Dashboard = ({ setGlobalScanData }) => {
             </div>
           )}
 
+          {/* View Raw JSON Card */}
+          {currentScan && (
+            <div className="glass-panel p-5 border-t-2 border-t-[#8b5cf6]">
+              <div className="flex items-center gap-2 mb-3">
+                <Code className="text-[#8b5cf6] w-5 h-5" />
+                <h3 className="text-sm font-bold text-textMain">Raw Scanner Output</h3>
+              </div>
+              <p className="text-xs text-textMuted mb-4">View the complete JSON data collected for {currentScan.target || 'this scan'}.</p>
+              <button
+                onClick={handleViewJson}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-[#8b5cf6]/20 border border-[#8b5cf6]/50 text-[#8b5cf6] hover:bg-[#8b5cf6]/30 transition-all focus:outline-none"
+              >
+                <Code size={16} />
+                View Raw JSON
+              </button>
+            </div>
+          )}
+
           {currentScan && currentScan.assetInventory?.domains?.length > 0 && (
             <div className="glass-panel p-6 border-t-2 border-t-blue-500">
               <h3 className="text-md font-bold mb-4 flex items-center gap-2">
@@ -686,6 +745,62 @@ const Dashboard = ({ setGlobalScanData }) => {
           </table>
         </div>
       </div>
+
+      {/* JSON Modal Overlay */}
+      {jsonModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) setJsonModalOpen(false); }}
+        >
+          <div className="relative w-[90vw] max-w-4xl h-[85vh] bg-panel border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-[#1f2937]/50">
+              <div className="flex items-center gap-3">
+                <Code size={20} className="text-primary" />
+                <h3 className="text-lg font-bold text-textMain">Raw Scanner JSON Output</h3>
+                {jsonData?.asset_domain && (
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded border border-primary/30">{jsonData.asset_domain}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopyJson}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-[#1f2937] border border-border text-textMuted hover:text-secondary hover:border-secondary/30 transition-all"
+                >
+                  <Copy size={14} />
+                  {jsonCopied ? 'Copied!' : 'Copy'}
+                </button>
+                <button
+                  onClick={handleDownloadJson}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-[#1f2937] border border-border text-textMuted hover:text-primary hover:border-primary/30 transition-all"
+                >
+                  <Download size={14} />
+                  Download
+                </button>
+                <button
+                  onClick={() => setJsonModalOpen(false)}
+                  className="p-1.5 rounded-lg text-textMuted hover:text-danger hover:bg-danger/10 transition-all ml-2"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+            {/* JSON Body */}
+            <div className="flex-1 overflow-auto p-6 custom-scrollbar">
+              {jsonLoading ? (
+                <div className="flex items-center justify-center h-full gap-3">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                  <span className="text-textMuted">Loading JSON data...</span>
+                </div>
+              ) : (
+                <pre className="text-sm font-mono text-[#22C55E] leading-relaxed whitespace-pre-wrap break-words">
+                  {JSON.stringify(jsonData, null, 2)}
+                </pre>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

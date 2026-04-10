@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 const { exec } = require('child_process');
 const ScanReport = require('./models/ScanReport');
 
@@ -88,7 +90,8 @@ app.post('/api/scan', (req, res) => {
         recommendations: scanData.recommendations || [],
         securityScore,
         cyberRating,
-        asset_inventory: scanData.asset_inventory
+        asset_inventory: scanData.asset_inventory,
+        rawScannerOutput: scanData
       });
 
       await newReport.save();
@@ -147,15 +150,15 @@ app.post('/api/chat', async (req, res) => {
 
     // 1. INTENT: SUMMARIZE / OVERVIEW
     if (query.includes("summarize") || query.includes("summary") || query.includes("overview")) {
-       // If they say "summarize it" or "summarize this" and we have a context domain
-       let targetDomain = "";
-       if ((query.includes(" it") || query.includes(" this") || query.includes(" that")) && contextDomain) {
-         targetDomain = contextDomain;
-       }
-       
-       const report = targetDomain 
-         ? await ScanReport.findOne({ target: new RegExp(targetDomain, 'i') }).sort({ scanDate: -1 })
-         : await ScanReport.findOne().sort({ scanDate: -1 });
+      // If they say "summarize it" or "summarize this" and we have a context domain
+      let targetDomain = "";
+      if ((query.includes(" it") || query.includes(" this") || query.includes(" that")) && contextDomain) {
+        targetDomain = contextDomain;
+      }
+
+      const report = targetDomain
+        ? await ScanReport.findOne({ target: new RegExp(targetDomain, 'i') }).sort({ scanDate: -1 })
+        : await ScanReport.findOne().sort({ scanDate: -1 });
 
       if (report) {
         responseText = `### Audit Summary for: **${report.target}**
@@ -172,7 +175,7 @@ app.post('/api/chat', async (req, res) => {
     else if (query.includes("vulnerabilities") || query.includes("risk") || query.includes("bad") || query.includes("weak")) {
       const weakScans = await ScanReport.find({ securityScore: { $lt: 500 } }).limit(5);
       if (weakScans.length > 0) {
-        responseText = "### Critical Cryptographic Weaknesses Found:\n" + weakScans.map(s => 
+        responseText = "### Critical Cryptographic Weaknesses Found:\n" + weakScans.map(s =>
           `- **${s.target}** (Score: ${s.securityScore}): Uses ${s.pqcSupport.statusLabel} ciphers.`
         ).join("\n") + "\n\nI recommend prioritizing these for PQC migration (ML-KEM).";
       } else {
@@ -184,9 +187,9 @@ app.post('/api/chat', async (req, res) => {
       const domainMatch = message.match(/([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}/i);
       const domain = domainMatch[0].replace(/^(www\.)/, "");
       const report = await ScanReport.findOne({ target: new RegExp(domain, 'i') }).sort({ scanDate: -1 });
-      
+
       if (report) {
-         responseText = `### Detailed Intel for: **${domain}**
+        responseText = `### Detailed Intel for: **${domain}**
 - **Readiness**: ${report.pqcSupport.statusLabel} (${report.securityScore}/1000)
 - **Protocol Security**: ${report.tlsConfiguration.protocol}
 - **Signature Alg**: ${report.certificateDetails.signatureAlgorithm}
@@ -227,6 +230,16 @@ QScan currently audits for:
   } catch (err) {
     console.error("EXPERT SYSTEM ERROR:", err);
     res.status(500).json({ error: 'Internal Query Engine failure.' });
+  }
+});
+
+// Serve the latest raw scanner JSON
+app.get('/api/scan-json', (req, res) => {
+  const jsonPath = path.join(__dirname, 'scan_results.json');
+  if (fs.existsSync(jsonPath)) {
+    res.sendFile(jsonPath);
+  } else {
+    res.status(404).json({ error: 'No scan results file found. Run a scan first.' });
   }
 });
 

@@ -49,6 +49,10 @@ const scanReportSchema = new mongoose.Schema({
   asset_inventory: {
     type: Object,
     default: {}
+  },
+  rawScannerOutput: {
+    type: Object,
+    default: {}
   }
 });
 

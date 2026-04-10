@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Globe, Lock, Server, Link, Shield, MapPin, Hash, X } from 'lucide-react';
+import React from 'react';
+import { Globe, Lock, Server, Link, Shield, MapPin, Hash } from 'lucide-react';
 
 const AssetInventory = ({ target = '', assetData }) => {
-  const [selectedMap, setSelectedMap] = useState(null);
 
   // STRICTLY use data passed from the backend scan engine.
   const domains = assetData?.domains || [];
@@ -114,6 +113,7 @@ const AssetInventory = ({ target = '', assetData }) => {
               <tr className="text-textMuted text-xs uppercase tracking-wider border-b border-border bg-[#1f2937]/50">
                 <th className="py-3 px-4 font-medium rounded-tl-lg">Detection Date</th>
                 <th className="py-3 px-4 font-medium">IP Address</th>
+                <th className="py-3 px-4 font-medium">Type</th>
                 <th className="py-3 px-4 font-medium">Ports</th>
                 <th className="py-3 px-4 font-medium">Subnet</th>
                 <th className="py-3 px-4 font-medium">ASN</th>
@@ -126,15 +126,19 @@ const AssetInventory = ({ target = '', assetData }) => {
               {ips.length > 0 ? ips.map((row, idx) => (
                 <tr key={idx} className="border-b border-border/50 hover:bg-[#1f2937]/30 transition-colors text-sm">
                   <td className="py-3 px-4 text-textMuted whitespace-nowrap">{row.detectionDate}</td>
-                  <td className="py-3 px-4 font-mono font-medium">
-                    <button
-                      onClick={() => setSelectedMap(row)}
-                      className="text-blue-400 hover:text-blue-300 underline text-sm flex items-center gap-1 cursor-pointer focus:outline-none"
-                      title="View on World Map"
-                    >
-                      {row.ip}
-                      <Globe size={12} className="inline opacity-70" />
-                    </button>
+                  <td className="py-3 px-4 font-mono font-medium text-textMain">
+                    {row.ip}
+                  </td>
+                  <td className="py-3 px-4">
+                    {row.ip && row.ip.includes(':') ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide bg-purple-500/15 text-purple-400 border border-purple-500/30">
+                        IPv6
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                        IPv4
+                      </span>
+                    )}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-1 flex-wrap">
@@ -155,49 +159,13 @@ const AssetInventory = ({ target = '', assetData }) => {
                   <td className="py-3 px-4 text-textMuted">{row.company}</td>
                 </tr>
               )) : (
-                <tr><td colSpan="8" className="py-8 text-center text-textMuted">Data is still generating or no IPs discovered.</td></tr>
+                <tr><td colSpan="9" className="py-8 text-center text-textMuted">Data is still generating or no IPs discovered.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Modal for World Map */}
-      {selectedMap && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-[#1f2937] border border-border rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-border bg-[#111827]">
-              <div className="flex flex-col">
-                <h3 className="text-xl font-bold flex items-center gap-2 text-textMain">
-                  <MapPin className="text-primary h-6 w-6" /> Location Map
-                </h3>
-                <p className="text-sm text-textMuted ml-8 font-mono mt-0.5">
-                  Target IP: <span className="text-primary/90">{selectedMap.ip}</span>
-                  {selectedMap.location && selectedMap.location !== '-' && selectedMap.location !== 'Unknown' && ` • ${selectedMap.location}`}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedMap(null)}
-                className="p-2 bg-[#1f2937] hover:bg-danger/20 border border-transparent hover:border-danger/30 rounded-full transition-all text-textMuted hover:text-danger"
-                title="Close map modal"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="w-full h-[65vh] min-h-[450px] bg-[#0a0f1a] relative">
-              <iframe
-                className="absolute inset-0 w-full h-full border-0"
-                src={selectedMap.lat && selectedMap.lon
-                  ? `https://maps.google.com/maps?q=${selectedMap.lat},${selectedMap.lon}&hl=en&z=12&output=embed`
-                  : `https://maps.google.com/maps?q=${encodeURIComponent(selectedMap.location || selectedMap.ip)}&hl=en&z=12&output=embed`}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
