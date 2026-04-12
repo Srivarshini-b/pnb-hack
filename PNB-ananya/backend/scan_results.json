@@ -1,0 +1,160 @@
+{
+  "asset_domain": "manipalrural.bank.in",
+  "scan_date": "2026-04-12 18:31:50",
+  "tls_configuration": {
+    "protocol": "Unknown",
+    "cipher_suite": "Unknown",
+    "tls_versions": {
+      "SSLv3": {
+        "supported": false,
+        "negotiated": null,
+        "label": "SSL 3.0"
+      },
+      "TLSv1.0": {
+        "supported": false,
+        "negotiated": null,
+        "label": "TLS 1.0"
+      },
+      "TLSv1.2": {
+        "supported": false,
+        "negotiated": null,
+        "label": "TLS 1.2"
+      },
+      "TLSv1.3": {
+        "supported": false,
+        "negotiated": null,
+        "label": "TLS 1.3"
+      },
+      "TLSv1.1": {
+        "supported": false,
+        "negotiated": null,
+        "label": "TLS 1.1"
+      }
+    }
+  },
+  "certificate_details": {},
+  "pqc_support": {
+    "supported_algorithms": [],
+    "partially_supported_algorithms": [
+      "x25519_frodo640aes",
+      "p256_frodo640aes",
+      "frodo640aes",
+      "frodo640shake",
+      "p256_frodo640shake",
+      "x25519_frodo640shake",
+      "p384_frodo976aes",
+      "frodo976aes",
+      "x448_frodo976aes",
+      "x448_frodo976shake",
+      "frodo976shake",
+      "p384_frodo976shake",
+      "p521_frodo1344aes",
+      "frodo1344shake",
+      "frodo1344aes",
+      "p521_frodo1344shake",
+      "bikel3",
+      "p256_bikel1",
+      "bikel1",
+      "X25519MLKEM768",
+      "mlkem512",
+      "x25519_mlkem512",
+      "x448_mlkem768",
+      "SecP256r1MLKEM768",
+      "bp384_mlkem768",
+      "x448_bikel3",
+      "SecP384r1MLKEM1024",
+      "mlkem1024",
+      "mlkem768",
+      "bp256_mlkem512",
+      "x25519_bikel1",
+      "p521_mlkem1024",
+      "p521_bikel5",
+      "bikel5",
+      "p384_bikel3",
+      "bp512_mlkem1024",
+      "p384_mlkem768",
+      "p256_mlkem512",
+      "secp256r1",
+      "X448",
+      "X25519",
+      "secp384r1",
+      "secp521r1"
+    ],
+    "rejected_algorithms": [],
+    "is_quantum_safe": false,
+    "status_label": "Non-PQC Ready",
+    "rawResults": {
+      "x25519_frodo640aes": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p256_frodo640aes": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "frodo640aes": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "frodo640shake": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "p256_frodo640shake": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "x25519_frodo640shake": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p384_frodo976aes": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "frodo976aes": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "x448_frodo976aes": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "x448_frodo976shake": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "frodo976shake": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "p384_frodo976shake": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p521_frodo1344aes": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "frodo1344shake": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "frodo1344aes": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "p521_frodo1344shake": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "bikel3": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "p256_bikel1": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "bikel1": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "X25519MLKEM768": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "mlkem512": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "x25519_mlkem512": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "x448_mlkem768": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "SecP256r1MLKEM768": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "bp384_mlkem768": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "x448_bikel3": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "SecP384r1MLKEM1024": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "mlkem1024": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "mlkem768": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "bp256_mlkem512": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "x25519_bikel1": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p521_mlkem1024": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p521_bikel5": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "bikel5": "PARTIALLY SUPPORTED \u2013 PURE PQ",
+      "p384_bikel3": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "bp512_mlkem1024": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p384_mlkem768": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "p256_mlkem512": "PARTIALLY SUPPORTED \u2013 HYBRID PQ",
+      "secp256r1": "PARTIALLY SUPPORTED \u2013 CLASSICAL",
+      "X448": "PARTIALLY SUPPORTED \u2013 CLASSICAL",
+      "X25519": "PARTIALLY SUPPORTED \u2013 CLASSICAL",
+      "secp384r1": "PARTIALLY SUPPORTED \u2013 CLASSICAL",
+      "secp521r1": "PARTIALLY SUPPORTED \u2013 CLASSICAL"
+    }
+  },
+  "recommendations": [
+    "Vulnerable to Harvest Now, Decrypt Later (HNDL) attacks.",
+    "Upgrade TLS stack to support hybrid ML-KEM key exchanges."
+  ],
+  "asset_inventory": {
+    "domains": [
+      {
+        "detectionDate": "2026-04-12",
+        "domain": "manipalrural.bank.in",
+        "regDate": "N/A",
+        "registrar": "N/A",
+        "company": "MANIPALRURAL",
+        "pqcSupported": 0,
+        "pqcStatus": "Non-PQC Ready",
+        "cipherSuite": "Unknown"
+      }
+    ],
+    "certificates": [],
+    "ips": []
+  },
+  "security_score": 125,
+  "cyber_rating": {
+    "tier": "Tier-3 Legacy",
+    "securityLevel": "Weak but operational",
+    "status": "Legacy",
+    "complianceCriteria": "Legacy protocols or weak ciphers",
+    "priorityAction": "Immediate TLS upgrade required"
+  }
+}

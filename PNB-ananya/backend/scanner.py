@@ -78,9 +78,30 @@ def get_ip_info(ip_address):
     return info
 
 def get_registered_subdomains(domain):
-    """Fetch registered subdomains using multiple passive API fallbacks."""
+    """Fetch registered subdomains using multiple passive API fallbacks and scraping."""
     subdomains = set()
     
+    # 0. Scrape from the default page of the domain
+    try:
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    except Exception:
+        pass
+
+    for proto in ["https", "http"]:
+        try:
+            url = f"{proto}://{domain}"
+            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5, verify=False)
+            html = response.text
+            pattern = r'([a-zA-Z0-9][a-zA-Z0-9.-]*\.' + re.escape(domain) + r')'
+            for match in re.findall(pattern, html):
+                name = match.lower().strip()
+                if name and not name.startswith("*") and name.endswith(domain) and name != domain:
+                    subdomains.add(name)
+            break
+        except Exception:
+            pass
+            
     # 1. Primary: HackerTarget (Usually very fast, returns verified live targets)
     try:
         url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
